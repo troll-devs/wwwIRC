@@ -1,4 +1,4 @@
----IRC
+wwwIRC
 ======
 
-IRC Client
+A Simple IRC Client
