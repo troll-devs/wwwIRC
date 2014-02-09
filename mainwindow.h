@@ -8,6 +8,8 @@
 #include <QTextCharFormat>
 #include <QTextCursor>
 #include <QScrollBar>
+#include <QMap>
+#include <QTime>
 
 class QTcpSocket;
 class QTextBrowser;
@@ -30,6 +32,7 @@ public:
 	QTextCharFormat format;
 	QTextCursor cursor;
 	bool f = true;
+	QMap<QString, QColor> nicks;
 
 public slots:
 	void connectToServer();

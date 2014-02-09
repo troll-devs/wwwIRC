@@ -7,6 +7,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui(new Ui::MainWindow)
 {
 	ui->setupUi(this);
+	qsrand(QTime::currentTime().msec());
 }
 
 MainWindow::~MainWindow()
@@ -30,7 +31,6 @@ void MainWindow::handleServerMessages(){
 		first = false;
 
 		cursor = ui->chatBrowser->textCursor();
-		//format.setFontWeight( QFont::DemiBold );
 		table = cursor.insertTable(1, 2);
 
 		f = false;
@@ -41,55 +41,51 @@ void MainWindow::handleServerMessages(){
 
 	if(l[0] == "PING"){
 		answer = "PONG " + l[1];
-		//while (answer.endsWith("\n") || answer.endsWith("\n"))
 		answer.chop(2);
 
 		ans = answer;
-		//answer += "\n";
+
 		ui->chatBrowser->append("String ends with <" + answer[answer.length()-1] +">");
-		//if(answer[answer.length()-1] == QChar("\n"))
-			//ui->chatBrowser->append("paragrafo");
 		QByteArray out = (answer+"\n").toLocal8Bit();
 
 
 		socket->write(out.data());
 		socket->write(out.data());
 
-		//ui->chatBrowser->append("<" + answer + ">");
 	}
 	if(l[0].startsWith(":IRC")){
-		socket->write("JOIN #exp\n");
-		//socket->write("JOIN #exp\n");
+		socket->write("JOIN #ancelb\n");
+
 	}
-	if(l[1] == "PRIVMSG"){
+	if(l[0].startsWith(":") && l[1] == "PRIVMSG"){
 
 		format.setForeground( QBrush( QColor( "blue" ) ) );
-		cursor.setCharFormat( format );
 
-		//QTextCursor cellCursor;
-		//cellCursor = table->cellAt(0,0).firstCursorPosition();
-		//cellCursor.insertText("OLAASASASASASAasd");
-
-		//table->append(parse[0]);
-		//table->append(l[3]);
-		QStringList parse = in.split("!");
+		QStringList parse = in.right(in.size()-1).split("!");
+		QString nick = parse[0];
+		if(!nicks.contains(nick)){
+			nicks[nick] = QColor(qrand() % 125 + 100, qrand() % 125 + 100, qrand() % 125 + 100);
+		}
+		QString message = l[3].right(l[3].size()-1);
 		table->appendRows(1);
-		QTextCursor cellCursor;
-		cellCursor.setCharFormat(format);
-		cellCursor = table->cellAt(row,0).firstCursorPosition();
-		cellCursor.insertText(parse[0]);
-		cellCursor = table->cellAt(row++,1).firstCursorPosition();
-		cellCursor.insertText(l[3]);
 
-		//cursor.insertText( "Hello world!" );
+		QTextCharFormat format;
 
-		//in = parse[0] + l[3];
-		//ui->chatBrowser->append(in);
-		format.setForeground( QBrush( QColor( "white" ) ) );
-		//ui->chatBrowser->append(in);
+		QTextCursor nickCursor = table->cellAt(row,0).firstCursorPosition();
+		format.setForeground(QBrush(nicks[nick]));
+		nickCursor.setCharFormat(format);
+		nickCursor.insertText(nick);
+
+
+		QTextCursor messageCursor = table->cellAt(row++,1).firstCursorPosition();
+		messageCursor.insertText(message);
 
 	}else{
 		QTextCursor cellCursor;
+
+		format.setForeground( QBrush( QColor( "blue" ) ) );
+		cellCursor.setCharFormat( format );
+
 		table->appendRows(1);
 		table->mergeCells(row, 0, 1, 2);
 		cellCursor = table->cellAt(row++,0).firstCursorPosition();
