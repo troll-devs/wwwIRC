@@ -75,7 +75,7 @@ void MainWindow::handleServerMessages(){
 		QStringList parse = in.split("!");
 		table->appendRows(1);
 		QTextCursor cellCursor;
-		cellCursor.setCharFormat( format );
+		cellCursor.setCharFormat(format);
 		cellCursor = table->cellAt(row,0).firstCursorPosition();
 		cellCursor.insertText(parse[0]);
 		cellCursor = table->cellAt(row++,1).firstCursorPosition();
