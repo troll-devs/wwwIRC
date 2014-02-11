@@ -10,6 +10,9 @@
 #include <QScrollBar>
 #include <QMap>
 #include <QTime>
+#include <QDebug>
+
+#define QT_NO_KEYWORDS
 
 class QTcpSocket;
 class QTextBrowser;
@@ -25,6 +28,8 @@ class MainWindow : public QMainWindow
 public:
 	explicit MainWindow(QWidget *parent = 0);
 	~MainWindow();
+	void outputMessage(QString, QString);
+
 	bool first = true;
 	QString ans;
 	QTextTable *table;
@@ -34,11 +39,13 @@ public:
 	bool f = true;
 	QMap<QString, QColor> nicks;
 
-public slots:
+public Q_SLOTS:
 	void connectToServer();
 	void handleServerMessages();
 	void sendMessage();
 	void pong();
+
+
 
 private:
 	Ui::MainWindow *ui;
