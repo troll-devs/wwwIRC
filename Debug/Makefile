@@ -890,7 +890,50 @@ mainwindow.o: ../wwwIRC/mainwindow.cpp ../wwwIRC/mainwindow.h \
 		/usr/include/qt/QtCore/QTime \
 		/usr/include/qt/QtCore/qdatetime.h \
 		/usr/include/qt/QtCore/QDebug \
-		ui_mainwindow.h
+		ui_mainwindow.h \
+		/usr/include/qt/QtCore/QVariant \
+		/usr/include/qt/QtWidgets/QAction \
+		/usr/include/qt/QtWidgets/qaction.h \
+		/usr/include/qt/QtWidgets/qactiongroup.h \
+		/usr/include/qt/QtWidgets/QApplication \
+		/usr/include/qt/QtWidgets/qapplication.h \
+		/usr/include/qt/QtCore/qcoreapplication.h \
+		/usr/include/qt/QtCore/qeventloop.h \
+		/usr/include/qt/QtWidgets/qdesktopwidget.h \
+		/usr/include/qt/QtGui/qguiapplication.h \
+		/usr/include/qt/QtGui/qinputmethod.h \
+		/usr/include/qt/QtWidgets/QButtonGroup \
+		/usr/include/qt/QtWidgets/qbuttongroup.h \
+		/usr/include/qt/QtWidgets/QGridLayout \
+		/usr/include/qt/QtWidgets/qgridlayout.h \
+		/usr/include/qt/QtWidgets/qlayout.h \
+		/usr/include/qt/QtWidgets/qlayoutitem.h \
+		/usr/include/qt/QtWidgets/qboxlayout.h \
+		/usr/include/qt/QtWidgets/QHeaderView \
+		/usr/include/qt/QtWidgets/qheaderview.h \
+		/usr/include/qt/QtWidgets/qabstractitemview.h \
+		/usr/include/qt/QtCore/qabstractitemmodel.h \
+		/usr/include/qt/QtCore/qitemselectionmodel.h \
+		/usr/include/qt/QtWidgets/qabstractitemdelegate.h \
+		/usr/include/qt/QtWidgets/qstyleoption.h \
+		/usr/include/qt/QtWidgets/qabstractspinbox.h \
+		/usr/include/qt/QtGui/qvalidator.h \
+		/usr/include/qt/QtCore/qregularexpression.h \
+		/usr/include/qt/QtWidgets/qslider.h \
+		/usr/include/qt/QtWidgets/qstyle.h \
+		/usr/include/qt/QtWidgets/qtabbar.h \
+		/usr/include/qt/QtWidgets/qrubberband.h \
+		/usr/include/qt/QtWidgets/QLineEdit \
+		/usr/include/qt/QtWidgets/qlineedit.h \
+		/usr/include/qt/QtWidgets/QMenu \
+		/usr/include/qt/QtWidgets/qmenu.h \
+		/usr/include/qt/QtWidgets/QMenuBar \
+		/usr/include/qt/QtWidgets/qmenubar.h \
+		/usr/include/qt/QtWidgets/QPushButton \
+		/usr/include/qt/QtWidgets/qpushbutton.h \
+		/usr/include/qt/QtWidgets/qabstractbutton.h \
+		/usr/include/qt/QtWidgets/QTabWidget \
+		/usr/include/qt/QtWidgets/QWidget
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o ../wwwIRC/mainwindow.cpp
 
 moc_mainwindow.o: moc_mainwindow.cpp 

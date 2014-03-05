@@ -11,6 +11,7 @@
 #include <QMap>
 #include <QTime>
 #include <QDebug>
+#include <QKeyEvent>
 
 #define QT_NO_KEYWORDS
 
@@ -29,6 +30,7 @@ public:
 	explicit MainWindow(QWidget *parent = 0);
 	~MainWindow();
 	void outputMessage(QString, QString);
+    bool eventFilter(QObject *, QEvent *);
 
 	bool first = true;
 	QString ans;
@@ -38,6 +40,8 @@ public:
 	QTextCursor cursor;
 	bool f = true;
 	QMap<QString, QColor> nicks;
+    QStringList historic;
+    int hIndex;
 
 public Q_SLOTS:
 	void connectToServer();
