@@ -12,13 +12,13 @@ MAKEFILE      = Makefile
 
 CC            = gcc
 CXX           = g++
-DEFINES       = -DQT_QML_DEBUG -DQT_DECLARATIVE_DEBUG -DQT_WIDGETS_LIB -DQT_NETWORK_LIB -DQT_GUI_LIB -DQT_CORE_LIB
+DEFINES       = -DQT_QML_DEBUG -DQT_DECLARATIVE_DEBUG -DQT_WEBKITWIDGETS_LIB -DQT_QUICK_LIB -DQT_OPENGL_LIB -DQT_PRINTSUPPORT_LIB -DQT_QML_LIB -DQT_WEBKIT_LIB -DQT_WIDGETS_LIB -DQT_POSITIONING_LIB -DQT_SENSORS_LIB -DQT_NETWORK_LIB -DQT_GUI_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -g -Wall -W -D_REENTRANT -fPIE $(DEFINES)
 CXXFLAGS      = -pipe -g -Wall -W -D_REENTRANT -fPIE $(DEFINES)
-INCPATH       = -I/usr/lib/qt/mkspecs/linux-g++ -I../wwwIRC -I/usr/include/qt -I/usr/include/qt/QtWidgets -I/usr/include/qt/QtNetwork -I/usr/include/qt/QtGui -I/usr/include/qt/QtCore -I. -I. -I.
+INCPATH       = -I/usr/lib/qt/mkspecs/linux-g++ -I../wwwIRC -I/usr/include/qt -I/usr/include/qt/QtWebKitWidgets -I/usr/include/qt/QtQuick -I/usr/include/qt/QtOpenGL -I/usr/include/qt/QtPrintSupport -I/usr/include/qt/QtQml -I/usr/include/qt/QtWebKit -I/usr/include/qt/QtWidgets -I/usr/include/qt/QtPositioning -I/usr/include/qt/QtSensors -I/usr/include/qt/QtNetwork -I/usr/include/qt/QtGui -I/usr/include/qt/QtCore -I. -I. -I.
 LINK          = g++
-LFLAGS        = -Wl,-O1,--sort-common,--as-needed,-z,relro
-LIBS          = $(SUBLIBS) -lQt5Widgets -lQt5Network -lQt5Gui -lQt5Core -lGL -lpthread 
+LFLAGS        = -Wl,-O1,--sort-common,--as-needed,-z,relro -Wl,-rpath-link,/usr/lib
+LIBS          = $(SUBLIBS) -lQt5WebKitWidgets -lQt5Quick -lQt5OpenGL -lQt5PrintSupport -lQt5Qml -lQt5WebKit -lQt5Widgets -lQt5Positioning -lQt5Sensors -lQt5Network -lQt5Gui -lQt5Core -lGL -lpthread 
 AR            = ar cqs
 RANLIB        = 
 QMAKE         = /usr/lib/qt/bin/qmake
@@ -46,10 +46,14 @@ OBJECTS_DIR   = ./
 ####### Files
 
 SOURCES       = ../wwwIRC/main.cpp \
-		../wwwIRC/mainwindow.cpp moc_mainwindow.cpp
+		../wwwIRC/mainwindow.cpp \
+		../wwwIRC/irctab.cpp moc_mainwindow.cpp \
+		moc_irctab.cpp
 OBJECTS       = main.o \
 		mainwindow.o \
-		moc_mainwindow.o
+		irctab.o \
+		moc_mainwindow.o \
+		moc_irctab.o
 DIST          = /usr/lib/qt/mkspecs/features/spec_pre.prf \
 		/usr/lib/qt/mkspecs/common/shell-unix.conf \
 		/usr/lib/qt/mkspecs/common/unix.conf \
@@ -294,7 +298,15 @@ Makefile: ../wwwIRC/IRCClient.pro /usr/lib/qt/mkspecs/linux-g++/qmake.conf /usr/
 		/usr/lib/qt/mkspecs/features/yacc.prf \
 		/usr/lib/qt/mkspecs/features/lex.prf \
 		../wwwIRC/IRCClient.pro \
+		/lib/libQt5WebKitWidgets.prl \
+		/lib/libQt5Quick.prl \
+		/lib/libQt5OpenGL.prl \
+		/lib/libQt5PrintSupport.prl \
+		/lib/libQt5Qml.prl \
+		/lib/libQt5WebKit.prl \
 		/lib/libQt5Widgets.prl \
+		/lib/libQt5Positioning.prl \
+		/lib/libQt5Sensors.prl \
 		/lib/libQt5Network.prl \
 		/lib/libQt5Gui.prl \
 		/lib/libQt5Core.prl
@@ -404,7 +416,15 @@ Makefile: ../wwwIRC/IRCClient.pro /usr/lib/qt/mkspecs/linux-g++/qmake.conf /usr/
 /usr/lib/qt/mkspecs/features/yacc.prf:
 /usr/lib/qt/mkspecs/features/lex.prf:
 ../wwwIRC/IRCClient.pro:
+/lib/libQt5WebKitWidgets.prl:
+/lib/libQt5Quick.prl:
+/lib/libQt5OpenGL.prl:
+/lib/libQt5PrintSupport.prl:
+/lib/libQt5Qml.prl:
+/lib/libQt5WebKit.prl:
 /lib/libQt5Widgets.prl:
+/lib/libQt5Positioning.prl:
+/lib/libQt5Sensors.prl:
 /lib/libQt5Network.prl:
 /lib/libQt5Gui.prl:
 /lib/libQt5Core.prl:
@@ -415,7 +435,7 @@ qmake_all: FORCE
 
 dist: 
 	@test -d .tmp/IRCClient1.0.0 || mkdir -p .tmp/IRCClient1.0.0
-	$(COPY_FILE) --parents $(SOURCES) $(DIST) .tmp/IRCClient1.0.0/ && $(COPY_FILE) --parents ../wwwIRC/mainwindow.h .tmp/IRCClient1.0.0/ && $(COPY_FILE) --parents ../wwwIRC/main.cpp ../wwwIRC/mainwindow.cpp .tmp/IRCClient1.0.0/ && $(COPY_FILE) --parents ../wwwIRC/mainwindow.ui .tmp/IRCClient1.0.0/ && (cd `dirname .tmp/IRCClient1.0.0` && $(TAR) IRCClient1.0.0.tar IRCClient1.0.0 && $(COMPRESS) IRCClient1.0.0.tar) && $(MOVE) `dirname .tmp/IRCClient1.0.0`/IRCClient1.0.0.tar.gz . && $(DEL_FILE) -r .tmp/IRCClient1.0.0
+	$(COPY_FILE) --parents $(SOURCES) $(DIST) .tmp/IRCClient1.0.0/ && $(COPY_FILE) --parents ../wwwIRC/mainwindow.h ../wwwIRC/irctab.h .tmp/IRCClient1.0.0/ && $(COPY_FILE) --parents ../wwwIRC/main.cpp ../wwwIRC/mainwindow.cpp ../wwwIRC/irctab.cpp .tmp/IRCClient1.0.0/ && $(COPY_FILE) --parents ../wwwIRC/mainwindow.ui .tmp/IRCClient1.0.0/ && (cd `dirname .tmp/IRCClient1.0.0` && $(TAR) IRCClient1.0.0.tar IRCClient1.0.0 && $(COMPRESS) IRCClient1.0.0.tar) && $(MOVE) `dirname .tmp/IRCClient1.0.0`/IRCClient1.0.0.tar.gz . && $(DEL_FILE) -r .tmp/IRCClient1.0.0
 
 
 clean:compiler_clean 
@@ -438,9 +458,9 @@ check: first
 
 compiler_rcc_make_all:
 compiler_rcc_clean:
-compiler_moc_header_make_all: moc_mainwindow.cpp
+compiler_moc_header_make_all: moc_mainwindow.cpp moc_irctab.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) moc_mainwindow.cpp
+	-$(DEL_FILE) moc_mainwindow.cpp moc_irctab.cpp
 moc_mainwindow.cpp: /usr/include/qt/QtWidgets/QMainWindow \
 		/usr/include/qt/QtWidgets/qmainwindow.h \
 		/usr/include/qt/QtWidgets/qwidget.h \
@@ -580,15 +600,275 @@ moc_mainwindow.cpp: /usr/include/qt/QtWidgets/QMainWindow \
 		/usr/include/qt/QtCore/QTime \
 		/usr/include/qt/QtCore/qdatetime.h \
 		/usr/include/qt/QtCore/QDebug \
+		/usr/include/qt/QtGui/QKeyEvent \
+		/usr/include/qt/QtWidgets/QLabel \
+		/usr/include/qt/QtWidgets/qlabel.h \
+		/usr/include/qt/QtWebKitWidgets/QWebView \
+		/usr/include/qt/QtWebKitWidgets/qwebview.h \
+		/usr/include/qt/QtWebKit/qwebkitglobal.h \
+		/usr/include/qt/QtWebKitWidgets/qwebpage.h \
+		/usr/include/qt/QtWebKit/qwebsettings.h \
+		/usr/include/qt/QtGui/qpainter.h \
+		/usr/include/qt/QtNetwork/qnetworkaccessmanager.h \
+		/usr/include/qt/QtCore/QObject \
+		/usr/include/qt/QtNetwork/QSslConfiguration \
+		/usr/include/qt/QtNetwork/qsslconfiguration.h \
+		/usr/include/qt/QtNetwork/qsslsocket.h \
+		/usr/include/qt/QtNetwork/qsslerror.h \
+		/usr/include/qt/QtNetwork/qsslcertificate.h \
+		/usr/include/qt/QtCore/qcryptographichash.h \
+		/usr/include/qt/QtNetwork/qssl.h \
+		/usr/include/qt/QtCore/QFlags \
+		/usr/include/qt/QtCore/QUrl \
 		../wwwIRC/mainwindow.h
 	/usr/lib/qt/bin/moc $(DEFINES) $(INCPATH) -I/usr/lib/gcc/include/c++/4.8.2 -I/usr/lib/gcc/include/c++/4.8.2/x86_64-unknown-linux-gnu -I/usr/lib/gcc/include/c++/4.8.2/backward -I/usr/lib/gcc/x86_64-unknown-linux-gnu/4.8.2/include -I/usr/local/include -I/usr/lib/gcc/x86_64-unknown-linux-gnu/4.8.2/include-fixed -I/usr/include ../wwwIRC/mainwindow.h -o moc_mainwindow.cpp
+
+moc_irctab.cpp: /usr/include/qt/QtWidgets/QWidget \
+		/usr/include/qt/QtWidgets/qwidget.h \
+		/usr/include/qt/QtGui/qwindowdefs.h \
+		/usr/include/qt/QtCore/qglobal.h \
+		/usr/include/qt/QtCore/qconfig.h \
+		/usr/include/qt/QtCore/qfeatures.h \
+		/usr/include/qt/QtCore/qsystemdetection.h \
+		/usr/include/qt/QtCore/qprocessordetection.h \
+		/usr/include/qt/QtCore/qcompilerdetection.h \
+		/usr/include/qt/QtCore/qglobalstatic.h \
+		/usr/include/qt/QtCore/qatomic.h \
+		/usr/include/qt/QtCore/qbasicatomic.h \
+		/usr/include/qt/QtCore/qatomic_bootstrap.h \
+		/usr/include/qt/QtCore/qgenericatomic.h \
+		/usr/include/qt/QtCore/qatomic_msvc.h \
+		/usr/include/qt/QtCore/qatomic_integrity.h \
+		/usr/include/qt/QtCore/qoldbasicatomic.h \
+		/usr/include/qt/QtCore/qatomic_vxworks.h \
+		/usr/include/qt/QtCore/qatomic_power.h \
+		/usr/include/qt/QtCore/qatomic_alpha.h \
+		/usr/include/qt/QtCore/qatomic_armv7.h \
+		/usr/include/qt/QtCore/qatomic_armv6.h \
+		/usr/include/qt/QtCore/qatomic_armv5.h \
+		/usr/include/qt/QtCore/qatomic_bfin.h \
+		/usr/include/qt/QtCore/qatomic_ia64.h \
+		/usr/include/qt/QtCore/qatomic_mips.h \
+		/usr/include/qt/QtCore/qatomic_s390.h \
+		/usr/include/qt/QtCore/qatomic_sh4a.h \
+		/usr/include/qt/QtCore/qatomic_sparc.h \
+		/usr/include/qt/QtCore/qatomic_x86.h \
+		/usr/include/qt/QtCore/qatomic_cxx11.h \
+		/usr/include/qt/QtCore/qatomic_gcc.h \
+		/usr/include/qt/QtCore/qatomic_unix.h \
+		/usr/include/qt/QtCore/qmutex.h \
+		/usr/include/qt/QtCore/qlogging.h \
+		/usr/include/qt/QtCore/qflags.h \
+		/usr/include/qt/QtCore/qtypeinfo.h \
+		/usr/include/qt/QtCore/qtypetraits.h \
+		/usr/include/qt/QtCore/qsysinfo.h \
+		/usr/include/qt/QtCore/qobjectdefs.h \
+		/usr/include/qt/QtCore/qnamespace.h \
+		/usr/include/qt/QtCore/qobjectdefs_impl.h \
+		/usr/include/qt/QtGui/qwindowdefs_win.h \
+		/usr/include/qt/QtCore/qobject.h \
+		/usr/include/qt/QtCore/qstring.h \
+		/usr/include/qt/QtCore/qchar.h \
+		/usr/include/qt/QtCore/qbytearray.h \
+		/usr/include/qt/QtCore/qrefcount.h \
+		/usr/include/qt/QtCore/qarraydata.h \
+		/usr/include/qt/QtCore/qstringbuilder.h \
+		/usr/include/qt/QtCore/qlist.h \
+		/usr/include/qt/QtCore/qalgorithms.h \
+		/usr/include/qt/QtCore/qiterator.h \
+		/usr/include/qt/QtCore/qcoreevent.h \
+		/usr/include/qt/QtCore/qscopedpointer.h \
+		/usr/include/qt/QtCore/qmetatype.h \
+		/usr/include/qt/QtCore/qvarlengtharray.h \
+		/usr/include/qt/QtCore/qcontainerfwd.h \
+		/usr/include/qt/QtCore/qisenum.h \
+		/usr/include/qt/QtCore/qobject_impl.h \
+		/usr/include/qt/QtCore/qmargins.h \
+		/usr/include/qt/QtCore/qrect.h \
+		/usr/include/qt/QtCore/qsize.h \
+		/usr/include/qt/QtCore/qpoint.h \
+		/usr/include/qt/QtGui/qpaintdevice.h \
+		/usr/include/qt/QtGui/qpalette.h \
+		/usr/include/qt/QtGui/qcolor.h \
+		/usr/include/qt/QtGui/qrgb.h \
+		/usr/include/qt/QtCore/qstringlist.h \
+		/usr/include/qt/QtCore/qdatastream.h \
+		/usr/include/qt/QtCore/qiodevice.h \
+		/usr/include/qt/QtCore/qpair.h \
+		/usr/include/qt/QtCore/qregexp.h \
+		/usr/include/qt/QtCore/qstringmatcher.h \
+		/usr/include/qt/QtGui/qbrush.h \
+		/usr/include/qt/QtCore/qvector.h \
+		/usr/include/qt/QtGui/qmatrix.h \
+		/usr/include/qt/QtGui/qpolygon.h \
+		/usr/include/qt/QtGui/qregion.h \
+		/usr/include/qt/QtCore/qline.h \
+		/usr/include/qt/QtGui/qtransform.h \
+		/usr/include/qt/QtGui/qpainterpath.h \
+		/usr/include/qt/QtGui/qimage.h \
+		/usr/include/qt/QtGui/qpixmap.h \
+		/usr/include/qt/QtCore/qsharedpointer.h \
+		/usr/include/qt/QtCore/qshareddata.h \
+		/usr/include/qt/QtCore/qsharedpointer_impl.h \
+		/usr/include/qt/QtCore/qhash.h \
+		/usr/include/qt/QtGui/qfont.h \
+		/usr/include/qt/QtGui/qfontmetrics.h \
+		/usr/include/qt/QtGui/qfontinfo.h \
+		/usr/include/qt/QtWidgets/qsizepolicy.h \
+		/usr/include/qt/QtGui/qcursor.h \
+		/usr/include/qt/QtGui/qkeysequence.h \
+		/usr/include/qt/QtGui/qevent.h \
+		/usr/include/qt/QtCore/qvariant.h \
+		/usr/include/qt/QtCore/qmap.h \
+		/usr/include/qt/QtCore/qdebug.h \
+		/usr/include/qt/QtCore/qtextstream.h \
+		/usr/include/qt/QtCore/qlocale.h \
+		/usr/include/qt/QtCore/qset.h \
+		/usr/include/qt/QtCore/qcontiguouscache.h \
+		/usr/include/qt/QtCore/qurl.h \
+		/usr/include/qt/QtCore/qurlquery.h \
+		/usr/include/qt/QtCore/qfile.h \
+		/usr/include/qt/QtCore/qfiledevice.h \
+		/usr/include/qt/QtGui/qvector2d.h \
+		/usr/include/qt/QtGui/qtouchdevice.h \
+		/usr/include/qt/QtWidgets/QTextBrowser \
+		/usr/include/qt/QtWidgets/qtextbrowser.h \
+		/usr/include/qt/QtWidgets/qtextedit.h \
+		/usr/include/qt/QtWidgets/qabstractscrollarea.h \
+		/usr/include/qt/QtWidgets/qframe.h \
+		/usr/include/qt/QtGui/qtextdocument.h \
+		/usr/include/qt/QtGui/qtextoption.h \
+		/usr/include/qt/QtGui/qtextcursor.h \
+		/usr/include/qt/QtGui/qtextformat.h \
+		/usr/include/qt/QtGui/qpen.h \
+		../wwwIRC/irctab.h
+	/usr/lib/qt/bin/moc $(DEFINES) $(INCPATH) -I/usr/lib/gcc/include/c++/4.8.2 -I/usr/lib/gcc/include/c++/4.8.2/x86_64-unknown-linux-gnu -I/usr/lib/gcc/include/c++/4.8.2/backward -I/usr/lib/gcc/x86_64-unknown-linux-gnu/4.8.2/include -I/usr/local/include -I/usr/lib/gcc/x86_64-unknown-linux-gnu/4.8.2/include-fixed -I/usr/include ../wwwIRC/irctab.h -o moc_irctab.cpp
 
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
 compiler_uic_make_all: ui_mainwindow.h
 compiler_uic_clean:
 	-$(DEL_FILE) ui_mainwindow.h
-ui_mainwindow.h: ../wwwIRC/mainwindow.ui
+ui_mainwindow.h: ../wwwIRC/mainwindow.ui \
+		../wwwIRC/irctab.h \
+		/usr/include/qt/QtWidgets/QWidget \
+		/usr/include/qt/QtWidgets/qwidget.h \
+		/usr/include/qt/QtGui/qwindowdefs.h \
+		/usr/include/qt/QtCore/qglobal.h \
+		/usr/include/qt/QtCore/qconfig.h \
+		/usr/include/qt/QtCore/qfeatures.h \
+		/usr/include/qt/QtCore/qsystemdetection.h \
+		/usr/include/qt/QtCore/qprocessordetection.h \
+		/usr/include/qt/QtCore/qcompilerdetection.h \
+		/usr/include/qt/QtCore/qglobalstatic.h \
+		/usr/include/qt/QtCore/qatomic.h \
+		/usr/include/qt/QtCore/qbasicatomic.h \
+		/usr/include/qt/QtCore/qatomic_bootstrap.h \
+		/usr/include/qt/QtCore/qgenericatomic.h \
+		/usr/include/qt/QtCore/qatomic_msvc.h \
+		/usr/include/qt/QtCore/qatomic_integrity.h \
+		/usr/include/qt/QtCore/qoldbasicatomic.h \
+		/usr/include/qt/QtCore/qatomic_vxworks.h \
+		/usr/include/qt/QtCore/qatomic_power.h \
+		/usr/include/qt/QtCore/qatomic_alpha.h \
+		/usr/include/qt/QtCore/qatomic_armv7.h \
+		/usr/include/qt/QtCore/qatomic_armv6.h \
+		/usr/include/qt/QtCore/qatomic_armv5.h \
+		/usr/include/qt/QtCore/qatomic_bfin.h \
+		/usr/include/qt/QtCore/qatomic_ia64.h \
+		/usr/include/qt/QtCore/qatomic_mips.h \
+		/usr/include/qt/QtCore/qatomic_s390.h \
+		/usr/include/qt/QtCore/qatomic_sh4a.h \
+		/usr/include/qt/QtCore/qatomic_sparc.h \
+		/usr/include/qt/QtCore/qatomic_x86.h \
+		/usr/include/qt/QtCore/qatomic_cxx11.h \
+		/usr/include/qt/QtCore/qatomic_gcc.h \
+		/usr/include/qt/QtCore/qatomic_unix.h \
+		/usr/include/qt/QtCore/qmutex.h \
+		/usr/include/qt/QtCore/qlogging.h \
+		/usr/include/qt/QtCore/qflags.h \
+		/usr/include/qt/QtCore/qtypeinfo.h \
+		/usr/include/qt/QtCore/qtypetraits.h \
+		/usr/include/qt/QtCore/qsysinfo.h \
+		/usr/include/qt/QtCore/qobjectdefs.h \
+		/usr/include/qt/QtCore/qnamespace.h \
+		/usr/include/qt/QtCore/qobjectdefs_impl.h \
+		/usr/include/qt/QtGui/qwindowdefs_win.h \
+		/usr/include/qt/QtCore/qobject.h \
+		/usr/include/qt/QtCore/qstring.h \
+		/usr/include/qt/QtCore/qchar.h \
+		/usr/include/qt/QtCore/qbytearray.h \
+		/usr/include/qt/QtCore/qrefcount.h \
+		/usr/include/qt/QtCore/qarraydata.h \
+		/usr/include/qt/QtCore/qstringbuilder.h \
+		/usr/include/qt/QtCore/qlist.h \
+		/usr/include/qt/QtCore/qalgorithms.h \
+		/usr/include/qt/QtCore/qiterator.h \
+		/usr/include/qt/QtCore/qcoreevent.h \
+		/usr/include/qt/QtCore/qscopedpointer.h \
+		/usr/include/qt/QtCore/qmetatype.h \
+		/usr/include/qt/QtCore/qvarlengtharray.h \
+		/usr/include/qt/QtCore/qcontainerfwd.h \
+		/usr/include/qt/QtCore/qisenum.h \
+		/usr/include/qt/QtCore/qobject_impl.h \
+		/usr/include/qt/QtCore/qmargins.h \
+		/usr/include/qt/QtCore/qrect.h \
+		/usr/include/qt/QtCore/qsize.h \
+		/usr/include/qt/QtCore/qpoint.h \
+		/usr/include/qt/QtGui/qpaintdevice.h \
+		/usr/include/qt/QtGui/qpalette.h \
+		/usr/include/qt/QtGui/qcolor.h \
+		/usr/include/qt/QtGui/qrgb.h \
+		/usr/include/qt/QtCore/qstringlist.h \
+		/usr/include/qt/QtCore/qdatastream.h \
+		/usr/include/qt/QtCore/qiodevice.h \
+		/usr/include/qt/QtCore/qpair.h \
+		/usr/include/qt/QtCore/qregexp.h \
+		/usr/include/qt/QtCore/qstringmatcher.h \
+		/usr/include/qt/QtGui/qbrush.h \
+		/usr/include/qt/QtCore/qvector.h \
+		/usr/include/qt/QtGui/qmatrix.h \
+		/usr/include/qt/QtGui/qpolygon.h \
+		/usr/include/qt/QtGui/qregion.h \
+		/usr/include/qt/QtCore/qline.h \
+		/usr/include/qt/QtGui/qtransform.h \
+		/usr/include/qt/QtGui/qpainterpath.h \
+		/usr/include/qt/QtGui/qimage.h \
+		/usr/include/qt/QtGui/qpixmap.h \
+		/usr/include/qt/QtCore/qsharedpointer.h \
+		/usr/include/qt/QtCore/qshareddata.h \
+		/usr/include/qt/QtCore/qsharedpointer_impl.h \
+		/usr/include/qt/QtCore/qhash.h \
+		/usr/include/qt/QtGui/qfont.h \
+		/usr/include/qt/QtGui/qfontmetrics.h \
+		/usr/include/qt/QtGui/qfontinfo.h \
+		/usr/include/qt/QtWidgets/qsizepolicy.h \
+		/usr/include/qt/QtGui/qcursor.h \
+		/usr/include/qt/QtGui/qkeysequence.h \
+		/usr/include/qt/QtGui/qevent.h \
+		/usr/include/qt/QtCore/qvariant.h \
+		/usr/include/qt/QtCore/qmap.h \
+		/usr/include/qt/QtCore/qdebug.h \
+		/usr/include/qt/QtCore/qtextstream.h \
+		/usr/include/qt/QtCore/qlocale.h \
+		/usr/include/qt/QtCore/qset.h \
+		/usr/include/qt/QtCore/qcontiguouscache.h \
+		/usr/include/qt/QtCore/qurl.h \
+		/usr/include/qt/QtCore/qurlquery.h \
+		/usr/include/qt/QtCore/qfile.h \
+		/usr/include/qt/QtCore/qfiledevice.h \
+		/usr/include/qt/QtGui/qvector2d.h \
+		/usr/include/qt/QtGui/qtouchdevice.h \
+		/usr/include/qt/QtWidgets/QTextBrowser \
+		/usr/include/qt/QtWidgets/qtextbrowser.h \
+		/usr/include/qt/QtWidgets/qtextedit.h \
+		/usr/include/qt/QtWidgets/qabstractscrollarea.h \
+		/usr/include/qt/QtWidgets/qframe.h \
+		/usr/include/qt/QtGui/qtextdocument.h \
+		/usr/include/qt/QtGui/qtextoption.h \
+		/usr/include/qt/QtGui/qtextcursor.h \
+		/usr/include/qt/QtGui/qtextformat.h \
+		/usr/include/qt/QtGui/qpen.h
 	/usr/lib/qt/bin/uic ../wwwIRC/mainwindow.ui -o ui_mainwindow.h
 
 compiler_yacc_decl_make_all:
@@ -741,6 +1021,26 @@ main.o: ../wwwIRC/main.cpp ../wwwIRC/mainwindow.h \
 		/usr/include/qt/QtCore/QTime \
 		/usr/include/qt/QtCore/qdatetime.h \
 		/usr/include/qt/QtCore/QDebug \
+		/usr/include/qt/QtGui/QKeyEvent \
+		/usr/include/qt/QtWidgets/QLabel \
+		/usr/include/qt/QtWidgets/qlabel.h \
+		/usr/include/qt/QtWebKitWidgets/QWebView \
+		/usr/include/qt/QtWebKitWidgets/qwebview.h \
+		/usr/include/qt/QtWebKit/qwebkitglobal.h \
+		/usr/include/qt/QtWebKitWidgets/qwebpage.h \
+		/usr/include/qt/QtWebKit/qwebsettings.h \
+		/usr/include/qt/QtGui/qpainter.h \
+		/usr/include/qt/QtNetwork/qnetworkaccessmanager.h \
+		/usr/include/qt/QtCore/QObject \
+		/usr/include/qt/QtNetwork/QSslConfiguration \
+		/usr/include/qt/QtNetwork/qsslconfiguration.h \
+		/usr/include/qt/QtNetwork/qsslsocket.h \
+		/usr/include/qt/QtNetwork/qsslerror.h \
+		/usr/include/qt/QtNetwork/qsslcertificate.h \
+		/usr/include/qt/QtCore/qcryptographichash.h \
+		/usr/include/qt/QtNetwork/qssl.h \
+		/usr/include/qt/QtCore/QFlags \
+		/usr/include/qt/QtCore/QUrl \
 		/usr/include/qt/QtWidgets/QApplication \
 		/usr/include/qt/QtWidgets/qapplication.h \
 		/usr/include/qt/QtCore/qcoreapplication.h \
@@ -890,6 +1190,26 @@ mainwindow.o: ../wwwIRC/mainwindow.cpp ../wwwIRC/mainwindow.h \
 		/usr/include/qt/QtCore/QTime \
 		/usr/include/qt/QtCore/qdatetime.h \
 		/usr/include/qt/QtCore/QDebug \
+		/usr/include/qt/QtGui/QKeyEvent \
+		/usr/include/qt/QtWidgets/QLabel \
+		/usr/include/qt/QtWidgets/qlabel.h \
+		/usr/include/qt/QtWebKitWidgets/QWebView \
+		/usr/include/qt/QtWebKitWidgets/qwebview.h \
+		/usr/include/qt/QtWebKit/qwebkitglobal.h \
+		/usr/include/qt/QtWebKitWidgets/qwebpage.h \
+		/usr/include/qt/QtWebKit/qwebsettings.h \
+		/usr/include/qt/QtGui/qpainter.h \
+		/usr/include/qt/QtNetwork/qnetworkaccessmanager.h \
+		/usr/include/qt/QtCore/QObject \
+		/usr/include/qt/QtNetwork/QSslConfiguration \
+		/usr/include/qt/QtNetwork/qsslconfiguration.h \
+		/usr/include/qt/QtNetwork/qsslsocket.h \
+		/usr/include/qt/QtNetwork/qsslerror.h \
+		/usr/include/qt/QtNetwork/qsslcertificate.h \
+		/usr/include/qt/QtCore/qcryptographichash.h \
+		/usr/include/qt/QtNetwork/qssl.h \
+		/usr/include/qt/QtCore/QFlags \
+		/usr/include/qt/QtCore/QUrl \
 		ui_mainwindow.h \
 		/usr/include/qt/QtCore/QVariant \
 		/usr/include/qt/QtWidgets/QAction \
@@ -933,11 +1253,141 @@ mainwindow.o: ../wwwIRC/mainwindow.cpp ../wwwIRC/mainwindow.h \
 		/usr/include/qt/QtWidgets/qpushbutton.h \
 		/usr/include/qt/QtWidgets/qabstractbutton.h \
 		/usr/include/qt/QtWidgets/QTabWidget \
-		/usr/include/qt/QtWidgets/QWidget
+		/usr/include/qt/QtWidgets/QWidget \
+		../wwwIRC/irctab.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o ../wwwIRC/mainwindow.cpp
+
+irctab.o: ../wwwIRC/irctab.cpp ../wwwIRC/irctab.h \
+		/usr/include/qt/QtWidgets/QWidget \
+		/usr/include/qt/QtWidgets/qwidget.h \
+		/usr/include/qt/QtGui/qwindowdefs.h \
+		/usr/include/qt/QtCore/qglobal.h \
+		/usr/include/qt/QtCore/qconfig.h \
+		/usr/include/qt/QtCore/qfeatures.h \
+		/usr/include/qt/QtCore/qsystemdetection.h \
+		/usr/include/qt/QtCore/qprocessordetection.h \
+		/usr/include/qt/QtCore/qcompilerdetection.h \
+		/usr/include/qt/QtCore/qglobalstatic.h \
+		/usr/include/qt/QtCore/qatomic.h \
+		/usr/include/qt/QtCore/qbasicatomic.h \
+		/usr/include/qt/QtCore/qatomic_bootstrap.h \
+		/usr/include/qt/QtCore/qgenericatomic.h \
+		/usr/include/qt/QtCore/qatomic_msvc.h \
+		/usr/include/qt/QtCore/qatomic_integrity.h \
+		/usr/include/qt/QtCore/qoldbasicatomic.h \
+		/usr/include/qt/QtCore/qatomic_vxworks.h \
+		/usr/include/qt/QtCore/qatomic_power.h \
+		/usr/include/qt/QtCore/qatomic_alpha.h \
+		/usr/include/qt/QtCore/qatomic_armv7.h \
+		/usr/include/qt/QtCore/qatomic_armv6.h \
+		/usr/include/qt/QtCore/qatomic_armv5.h \
+		/usr/include/qt/QtCore/qatomic_bfin.h \
+		/usr/include/qt/QtCore/qatomic_ia64.h \
+		/usr/include/qt/QtCore/qatomic_mips.h \
+		/usr/include/qt/QtCore/qatomic_s390.h \
+		/usr/include/qt/QtCore/qatomic_sh4a.h \
+		/usr/include/qt/QtCore/qatomic_sparc.h \
+		/usr/include/qt/QtCore/qatomic_x86.h \
+		/usr/include/qt/QtCore/qatomic_cxx11.h \
+		/usr/include/qt/QtCore/qatomic_gcc.h \
+		/usr/include/qt/QtCore/qatomic_unix.h \
+		/usr/include/qt/QtCore/qmutex.h \
+		/usr/include/qt/QtCore/qlogging.h \
+		/usr/include/qt/QtCore/qflags.h \
+		/usr/include/qt/QtCore/qtypeinfo.h \
+		/usr/include/qt/QtCore/qtypetraits.h \
+		/usr/include/qt/QtCore/qsysinfo.h \
+		/usr/include/qt/QtCore/qobjectdefs.h \
+		/usr/include/qt/QtCore/qnamespace.h \
+		/usr/include/qt/QtCore/qobjectdefs_impl.h \
+		/usr/include/qt/QtGui/qwindowdefs_win.h \
+		/usr/include/qt/QtCore/qobject.h \
+		/usr/include/qt/QtCore/qstring.h \
+		/usr/include/qt/QtCore/qchar.h \
+		/usr/include/qt/QtCore/qbytearray.h \
+		/usr/include/qt/QtCore/qrefcount.h \
+		/usr/include/qt/QtCore/qarraydata.h \
+		/usr/include/qt/QtCore/qstringbuilder.h \
+		/usr/include/qt/QtCore/qlist.h \
+		/usr/include/qt/QtCore/qalgorithms.h \
+		/usr/include/qt/QtCore/qiterator.h \
+		/usr/include/qt/QtCore/qcoreevent.h \
+		/usr/include/qt/QtCore/qscopedpointer.h \
+		/usr/include/qt/QtCore/qmetatype.h \
+		/usr/include/qt/QtCore/qvarlengtharray.h \
+		/usr/include/qt/QtCore/qcontainerfwd.h \
+		/usr/include/qt/QtCore/qisenum.h \
+		/usr/include/qt/QtCore/qobject_impl.h \
+		/usr/include/qt/QtCore/qmargins.h \
+		/usr/include/qt/QtCore/qrect.h \
+		/usr/include/qt/QtCore/qsize.h \
+		/usr/include/qt/QtCore/qpoint.h \
+		/usr/include/qt/QtGui/qpaintdevice.h \
+		/usr/include/qt/QtGui/qpalette.h \
+		/usr/include/qt/QtGui/qcolor.h \
+		/usr/include/qt/QtGui/qrgb.h \
+		/usr/include/qt/QtCore/qstringlist.h \
+		/usr/include/qt/QtCore/qdatastream.h \
+		/usr/include/qt/QtCore/qiodevice.h \
+		/usr/include/qt/QtCore/qpair.h \
+		/usr/include/qt/QtCore/qregexp.h \
+		/usr/include/qt/QtCore/qstringmatcher.h \
+		/usr/include/qt/QtGui/qbrush.h \
+		/usr/include/qt/QtCore/qvector.h \
+		/usr/include/qt/QtGui/qmatrix.h \
+		/usr/include/qt/QtGui/qpolygon.h \
+		/usr/include/qt/QtGui/qregion.h \
+		/usr/include/qt/QtCore/qline.h \
+		/usr/include/qt/QtGui/qtransform.h \
+		/usr/include/qt/QtGui/qpainterpath.h \
+		/usr/include/qt/QtGui/qimage.h \
+		/usr/include/qt/QtGui/qpixmap.h \
+		/usr/include/qt/QtCore/qsharedpointer.h \
+		/usr/include/qt/QtCore/qshareddata.h \
+		/usr/include/qt/QtCore/qsharedpointer_impl.h \
+		/usr/include/qt/QtCore/qhash.h \
+		/usr/include/qt/QtGui/qfont.h \
+		/usr/include/qt/QtGui/qfontmetrics.h \
+		/usr/include/qt/QtGui/qfontinfo.h \
+		/usr/include/qt/QtWidgets/qsizepolicy.h \
+		/usr/include/qt/QtGui/qcursor.h \
+		/usr/include/qt/QtGui/qkeysequence.h \
+		/usr/include/qt/QtGui/qevent.h \
+		/usr/include/qt/QtCore/qvariant.h \
+		/usr/include/qt/QtCore/qmap.h \
+		/usr/include/qt/QtCore/qdebug.h \
+		/usr/include/qt/QtCore/qtextstream.h \
+		/usr/include/qt/QtCore/qlocale.h \
+		/usr/include/qt/QtCore/qset.h \
+		/usr/include/qt/QtCore/qcontiguouscache.h \
+		/usr/include/qt/QtCore/qurl.h \
+		/usr/include/qt/QtCore/qurlquery.h \
+		/usr/include/qt/QtCore/qfile.h \
+		/usr/include/qt/QtCore/qfiledevice.h \
+		/usr/include/qt/QtGui/qvector2d.h \
+		/usr/include/qt/QtGui/qtouchdevice.h \
+		/usr/include/qt/QtWidgets/QTextBrowser \
+		/usr/include/qt/QtWidgets/qtextbrowser.h \
+		/usr/include/qt/QtWidgets/qtextedit.h \
+		/usr/include/qt/QtWidgets/qabstractscrollarea.h \
+		/usr/include/qt/QtWidgets/qframe.h \
+		/usr/include/qt/QtGui/qtextdocument.h \
+		/usr/include/qt/QtGui/qtextoption.h \
+		/usr/include/qt/QtGui/qtextcursor.h \
+		/usr/include/qt/QtGui/qtextformat.h \
+		/usr/include/qt/QtGui/qpen.h \
+		/usr/include/qt/QtWidgets/QGridLayout \
+		/usr/include/qt/QtWidgets/qgridlayout.h \
+		/usr/include/qt/QtWidgets/qlayout.h \
+		/usr/include/qt/QtWidgets/qlayoutitem.h \
+		/usr/include/qt/QtWidgets/qboxlayout.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o irctab.o ../wwwIRC/irctab.cpp
 
 moc_mainwindow.o: moc_mainwindow.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_mainwindow.o moc_mainwindow.cpp
+
+moc_irctab.o: moc_irctab.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_irctab.o moc_irctab.cpp
 
 ####### Install
 

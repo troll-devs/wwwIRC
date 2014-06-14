@@ -32,33 +32,20 @@
     <item row="2" column="0" rowspan="2">
      <widget class="QLineEdit" name="message"/>
     </item>
-    <item row="0" column="0" colspan="2">
+    <item row="1" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
        <number>0</number>
       </property>
-      <widget class="QWidget" name="tab">
+      <widget class="IrcTab" name="tab">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
        <attribute name="title">
         <string>Tab 1</string>
        </attribute>
-       <layout class="QGridLayout" name="gridLayout_2">
-        <item row="0" column="0">
-         <widget class="QTextBrowser" name="chatBrowser"/>
-        </item>
-       </layout>
+       <layout class="QGridLayout" name="gridLayout_2"/>
       </widget>
-      <widget class="QWidget" name="tab_2">
-       <attribute name="title">
-        <string>Tab 2</string>
-       </attribute>
-      </widget>
-     </widget>
-    </item>
-    <item row="1" column="1" colspan="2">
-     <widget class="QPushButton" name="pushButton_3">
-      <property name="text">
-       <string>pong</string>
-      </property>
      </widget>
     </item>
    </layout>
@@ -87,6 +74,14 @@
   </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>IrcTab</class>
+   <extends>QWidget</extends>
+   <header location="global">irctab.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections>
   <connection>
@@ -134,22 +129,6 @@
     <hint type="destinationlabel">
      <x>557</x>
      <y>517</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_3</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>pong()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>539</x>
-     <y>449</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>466</x>
-     <y>70</y>
     </hint>
    </hints>
   </connection>

@@ -5,18 +5,19 @@
 #-------------------------------------------------
 
 QT      += core gui
-QT		+= network
-
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+QT	+= network
+QT      += webkit webkitwidgets
+QT += widgets
 
 TARGET = IRCClient
 TEMPLATE = app
 
-
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    irctab.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    irctab.h
 
 FORMS    += mainwindow.ui
 

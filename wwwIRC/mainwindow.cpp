@@ -2,16 +2,43 @@
 #include "ui_mainwindow.h"
 
 QString server = "irc.mibbit.com";
-QString channel = "#exp";
+QString channel = "#derp";
 QString serverNick = "michelBotQT";
 
+QMainWindow* f;
+
 MainWindow::MainWindow(QWidget *parent) :
-	QMainWindow(parent),
+    QMainWindow(parent),
 	ui(new Ui::MainWindow)
 {
-	ui->setupUi(this);
+    ui->setupUi(this);
+    qsrand(QTime::currentTime().msec());
+
+    f = new QMainWindow();
+    f->setWindowFlags(Qt::Window | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
+    f->setGeometry(100, 100, 400, 200);
+    f->setCentralWidget(new QWidget);
+    QVBoxLayout *layoutFrame = new QVBoxLayout;
+    f->centralWidget()->setLayout(layoutFrame);
+
+    previewer = new QLabel("asasdasaas");
+
+    f->show();
     ui->message->installEventFilter(this);
-	qsrand(QTime::currentTime().msec());
+
+    chatBrowser = ((IrcTab* )ui->tabWidget->currentWidget())->chatBrowser;
+
+    chatBrowser->viewport()->setMouseTracking(true);
+    chatBrowser->viewport()->installEventFilter(this);
+
+    webpage = new QWebView(f->centralWidget());
+    webpage->setGeometry(0, 0, 400, 300);
+    webpage->show();
+
+    QRect screenGeometry = QDesktopWidget().availableGeometry();
+    desktopWidth = screenGeometry.width();
+    desktopHeight = screenGeometry.height();
+
 }
 
 MainWindow::~MainWindow()
@@ -21,7 +48,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::handleServerMessages(){
 
-	QScrollBar *sb = ui->chatBrowser->verticalScrollBar();
+    QScrollBar *sb = chatBrowser->verticalScrollBar();
 	bool maxScroll = false;
 	int oldScroll = sb->value();
 	if(sb->value() == sb->maximum())
@@ -34,7 +61,7 @@ void MainWindow::handleServerMessages(){
 		socket->write(w.toLocal8Bit());
 		first = false;
 
-		cursor = ui->chatBrowser->textCursor();
+        cursor = chatBrowser->textCursor();
 		table = cursor.insertTable(1, 2);
 
 	}
@@ -48,9 +75,7 @@ void MainWindow::handleServerMessages(){
 
 		ans = answer;
 
-        //ui->chatBrowser->append("String ends with <" + answer[answer.length()-1] +">");
 		QByteArray out = (answer+"\n").toLocal8Bit();
-
 
 		socket->write(out.data());
 		socket->write(out.data());
@@ -78,7 +103,7 @@ void MainWindow::handleServerMessages(){
 		QTextCursor cellCursor;
 
 		format.setForeground( QBrush( QColor( "blue" ) ) );
-		cellCursor.setCharFormat( format );
+        cellCursor.setCharFormat( format );
 
 		table->appendRows(1);
 		table->mergeCells(row, 0, 1, 2);
@@ -98,7 +123,7 @@ void MainWindow::connectToServer(){
 	first = true;
 	socket = new QTcpSocket(this);
 	socket->connectToHost(server, 6667);
-	ui->chatBrowser->append("connect");
+    chatBrowser->append("connect");
 
 	connect(socket, SIGNAL(readyRead()), this, SLOT(handleServerMessages()) );
 	nicks[serverNick] = QColor("red");
@@ -109,7 +134,6 @@ void MainWindow::outputMessage(QString nick, QString message){
 
 	QTextCharFormat formatNick;
 	formatNick.setForeground(nicks[nick]);
-	printf(nick.toLocal8Bit());
 	formatNick.setFontWeight(80);
 
 	table->appendRows(1);
@@ -124,12 +148,11 @@ void MainWindow::outputMessage(QString nick, QString message){
 }
 
 void MainWindow::sendMessage(){
-	QScrollBar *sb = ui->chatBrowser->verticalScrollBar();
+    QScrollBar *sb = chatBrowser->verticalScrollBar();
 	bool maxScroll = false;
 	int oldScroll = sb->value();
 	if(sb->value() == sb->maximum())
 		maxScroll = true;
-
 
 	QByteArray out;
 	QString m;
@@ -144,7 +167,6 @@ void MainWindow::sendMessage(){
 
 	}else{
 		QString message = "PRIVMSG " + channel + " :" + ui->message->text() + "\n";
-		//printf(message.toLocal8Bit());
 		m = message;
         historic.append(ui->message->text());
         hIndex = historic.size();
@@ -163,7 +185,7 @@ void MainWindow::sendMessage(){
 }
 
 void MainWindow::pong(){
-	ui->chatBrowser->append(ans);
+    chatBrowser->append(ans);
 	QByteArray out = (ans + "\n").toLocal8Bit();
 	socket->write(out);
 }
@@ -200,17 +222,68 @@ bool MainWindow::eventFilter(QObject* obj, QEvent *event)
             }
         }
         return false;
-
     }
     if (event->type() == QEvent::KeyPress){
         QKeyEvent* keyEvent = (QKeyEvent*)event;
         int key = keyEvent->key();
-        printf("%c\n", key);
-        //if(key >= 'a' && key <= 'z'){
-        ui->message->text().append((QChar)key);
-        //}
 
+        ui->message->text().append((QChar)key);
+
+    }
+    if(obj == chatBrowser->viewport() /*&& (event->type()==QEvent::Enter || event->type()==QEvent::Leave || event->type()==QEvent::Move )*/ ){
+        QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
+        if(mouseEvent->type() == QMouseEvent::Enter){
+            activePreview = true;
+        }else if(mouseEvent->type() == QMouseEvent::Leave){
+            activePreview = false;
+            if(!f->isHidden())
+                f->hide();
+        }
+        if(mouseEvent->type() == QMouseEvent::Move || mouseEvent->type() == QMouseEvent::MouseMove){
+            int x, y, gx, gy;
+            x = mouseEvent->pos().x() + 3;
+            y = mouseEvent->pos().y() + 3;
+            gx = mouseEvent->globalPos().x() + 8;
+            gy = mouseEvent->globalPos().y() + 6;
+            gx = gx + 400 < desktopWidth ? gx : desktopWidth - 400;
+            gy = gy + 300 < desktopHeight ? gy : desktopHeight - 300;
+            f->setGeometry(gx, gy, 400, 300);
+            QTextCursor cursor = chatBrowser->cursorForPosition(QPoint(x, y));
+
+            int p = cursor.positionInBlock();
+            cursor.select(QTextCursor::LineUnderCursor);
+
+            QString s = cursor.selectedText();
+
+            //qDebug() << p << " " << s;
+            QString link;
+            if(isLink(s, p, link)){
+                if(f->isHidden()){
+                    link = "http://" + link;
+                    qDebug() << link;
+                    f->show();
+
+                    webpage->load(QUrl(link));
+
+                    //webpage->show();
+                    //webpage->load(url);
+                    //f->show();
+
+                }
+                //previewer->setText(s);
+
+            }else{
+                if(!f->isHidden())
+                    f->hide();
+            }
+
+        }
     }
 
     return QMainWindow::eventFilter(obj, event);
+
+}
+
+void MainWindow::closeEvent(QCloseEvent* e){
+    f->close();
 }
